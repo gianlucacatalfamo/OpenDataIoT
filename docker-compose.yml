@@ -1,0 +1,59 @@
+version: '3'
+services:
+  influxdb:
+    image: influxdb:2.1
+    container_name: influxdb
+    hostname: influxdb
+    ports:
+      - '8724:8086'
+    volumes:
+      - influxdb-storage:/var/lib/influxdb2
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=<USERNAME>
+      - DOCKER_INFLUXDB_INIT_PASSWORD=<PASSWORD>
+      - DOCKER_INFLUXDB_INIT_ORG=<ORGANIZATION>
+      - DOCKER_INFLUXDB_INIT_BUCKET=OpenDataIoT
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=<TOKEN>
+    restart: always
+  grafana:
+    image: grafana/grafana:8.4.3
+    container_name: grafana
+    ports:
+      - '8725:3000'
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./grafana-provisioning/:/etc/grafana/provisioning
+    depends_on:
+      - influxdb
+    environment:
+      - GF_SECURITY_ADMIN_USER=<USERNAME>
+      - GF_SECURITY_ADMIN_PASSWORD=<PASSWORD>
+    restart: always
+  mqtt2influx:
+    build: ./mqtt2influx/.
+    container_name: mqtt2influx
+    volumes:
+      - mqtt2influx:/etc/mqtt2influx
+      - mqtt2influx-log:/opt/app/log
+    restart: always
+  mqttbroker:
+      build: ./mqttbroker/.
+      container_name: mqttbroker
+      hostname: mqttbroker
+      ports:
+        - '1883:1883'
+      volumes:
+        - mqttbroker-conf:/mosquitto/config
+        - mqttbroker-data:/mosquitto/data
+        - mqttbroker-log:/mosquitto/log
+      restart: always
+volumes:
+  influxdb-storage:
+  grafana-storage:
+  mqtt2influx:
+  mqtt2influx-log:
+  mqttbroker-conf:
+  mqttbroker-data:
+  mqttbroker-log:
+  

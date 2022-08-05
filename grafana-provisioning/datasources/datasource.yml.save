@@ -1,0 +1,30 @@
+apiVersion: 1
+datasources:
+  - name: InfluxDB
+    type: influxdb
+    access: proxy
+    organization: FCRLab
+    bucket: OpenDataIoT
+    user: admin
+    password: admin
+    url: http://influxdb:8086
+    isDefault: true
+    editable: true
+
+apiVersion: 1
+datasources:
+- orgId: 1
+  version: 2
+  name: InfluxDB
+  type: influxdb
+  access: proxy
+  url: https://eu-central-1-1.aws.cloud2.influxdata.com/api/v2/
+  basicAuth: true
+  isDefault: true
+  jsonData:
+    defaultBucket: <my-bucket>
+    httpMode: POST
+    organization: <my-organization>
+    version: Flux
+  secureJsonData:
+    token: <my-token>
